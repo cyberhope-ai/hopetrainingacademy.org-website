@@ -1,0 +1,14 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+
+# scratch / build
+node_modules/
+.wrangler/
+*.log
+
+# large raw photo originals (keep the _sm/optimized + manifests, not the multi-MB raws)
+candidates/c1.jpg
+candidates/c2.jpg
+candidates/c3.jpg
