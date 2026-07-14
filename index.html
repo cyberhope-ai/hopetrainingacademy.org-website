@@ -52,7 +52,7 @@
   .btn-cyan{background:var(--grad);color:#04121a;box-shadow:0 10px 30px -8px var(--glow-c);}
   .btn-ghost{border-color:var(--line-2);color:var(--text);background:rgba(255,255,255,.02);}
   .btn-ghost:hover{border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan) inset,0 0 22px -6px var(--glow-c);}
-  .btn-lg{padding:14px 26px;font-size:.98rem;}
+  .btn-lg{padding:14px 26px;font-size:.98rem;}.form-ok{text-align:center;padding:28px 12px;}.form-ok h3{font-size:1.5rem;margin-bottom:8px;color:var(--cyan);}.form-ok p{color:var(--muted);}
 
   /* top utility bar */
   .util{background:var(--bg3);border-bottom:1px solid var(--line);font-family:var(--mono);font-size:.73rem;letter-spacing:.02em;}
@@ -486,10 +486,7 @@
         </div>
         <div class="trust" style="margin-top:18px;"><span class="pill">FREE FOR THOSE WHO QUALIFY</span><span class="pill">GI BILL® &amp; VA ACCEPTED</span></div>
       </div>
-      <form class="lead-form reveal" action="https://formsubmit.co/info@hopetrainingacademy.org" method="POST">
-        <input type="hidden" name="_subject" value="New HTA Student Inquiry — website" />
-        <input type="hidden" name="_captcha" value="false" />
-        <input type="hidden" name="_template" value="table" />
+      <form class="lead-form reveal" action="https://api.web3forms.com/submit" method="POST"><input type="hidden" name="access_key" value="c6756334-43b4-408d-9242-f925a7e6176c"/><input type="hidden" name="subject" value="New HTA Student Lead - website"/><input type="hidden" name="from_name" value="Hope Training Academy Website"/><input type="hidden" name="website" value="hopetrainingacademy.org"/>
         <div class="frow">
           <div class="field"><label>First name *</label><input name="first_name" required placeholder="First name" /></div>
           <div class="field"><label>Last name *</label><input name="last_name" required placeholder="Last name" /></div>
@@ -547,4 +544,4 @@
   var vh=window.innerHeight||root.clientHeight;
   els.forEach(function(el){if(el.getBoundingClientRect().top<vh*0.98){show(el);}else{io.observe(el);}});
   setTimeout(function(){els.forEach(show);},1600);}catch(e){els.forEach(show);}})();
-</script>
+</script><script>document.querySelectorAll("form.lead-form").forEach(function(f){f.addEventListener("submit",function(e){e.preventDefault();var btn=f.querySelector("[type=submit]");var old=btn?btn.textContent:"";if(btn){btn.disabled=true;btn.textContent="Sending\u2026";}var data={};new FormData(f).forEach(function(v,k){data[k]=v;});fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(data)}).then(function(r){return r.json();}).then(function(j){if(j.success){f.innerHTML='<div class="form-ok"><h3>Thank you!</h3><p>We\'ve got your info \u2014 a Hope Training Academy coach will reach out soon. Prefer to talk now? Call (317)\u00a0707-4095.</p></div>';}else{throw new Error(j.message||"failed");}}).catch(function(){if(btn){btn.disabled=false;btn.textContent=old;}var m=f.querySelector(".form-err");if(!m){m=document.createElement("p");m.className="form-err";m.style.cssText="color:#ff6b6b;margin-top:10px;font-size:.9rem;text-align:center;";f.appendChild(m);}m.textContent="Something went wrong \u2014 please call (317) 707-4095 or try again.";});});});</script>
