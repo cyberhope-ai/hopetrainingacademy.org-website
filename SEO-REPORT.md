@@ -81,7 +81,7 @@ Microsoft Clarity + Google tag (GA4/Ads) are already wired into every page's `<h
 ### E. Google Business Profile (the map pack — huge for "IT training near me") — 10 min
 1. **https://business.google.com** → add "Hope Training Academy" at **525 S Meridian St, Indianapolis, IN 46225**.
 2. Verify (postcard or phone). Set category **"Vocational school"** + secondary "Training centre".
-3. Add photos of the lab, hours (M–F 9–5), phone (317) 707-4095, and the website.
+3. Add photos of the lab, hours (M–F 9–5), phone (317) 978-9364, and the website.
 4. Ask a few grads to leave reviews. **This is how HTA beats a Texas-HQ'd chain and remote-first Per Scholas** — they can't own a local Indianapolis map pin the way a real 2018 local nonprofit can.
 
 > Once you send me the **Clarity ID + GA4 ID + Ads conversion ID + Search Console tag**, I flip everything on and redeploy in one pass. Until then the scaffolding sits inert and harmless.

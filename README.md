@@ -48,7 +48,7 @@ Dark, high-tech, professional; a **new brand** (deliberately not the old HTA sit
 
 - **Current & only location:** Union Campus — **525 South Meridian Street, Indianapolis, IN**.
   (Past locations live on `history.html`.)
-- **Phone (AI-answered):** (317) 707-4095
+- **Phone (AI-answered):** (317) 978-9364
 - **CTAs:** Career Evaluation · Request Information · Schedule a Campus Tour
 - **Trust:** VA Certified · Military Friendly · GI Bill · USDOL Registered Apprenticeship
 - **Lead form:** captures name/email/phone/program interest (currently posts via
