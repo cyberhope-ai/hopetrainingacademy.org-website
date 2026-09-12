@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://hopetrainingacademy.org/sitemap.xml
+Sitemap: https://hopetrainingacademy.org/courses-sitemap.xml
