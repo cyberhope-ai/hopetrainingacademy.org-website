@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Free Typing Test &amp; Typing Practice | Hope Training Academy</title>
+<meta name="description" content="Take a free 1-minute typing test. See your words per minute (WPM) and accuracy instantly, then get free tips to type faster. No sign-up needed."/>
+<link rel="canonical" href="https://hopetrainingacademy.org/free-typing-test/"/>
+<meta name="robots" content="index,follow"/><meta name="theme-color" content="#05080f"/>
+<meta property="og:title" content="Free Typing Test | Hope Training Academy"/><meta property="og:description" content="Free 1-minute typing test: WPM and accuracy instantly."/><meta property="og:url" content="https://hopetrainingacademy.org/free-typing-test/"/><meta property="og:image" content="https://hopetrainingacademy.org/assets/og-cover.jpg"/>
+<script>(function(){if(window.__htaGoogleTagInitialized)return;window.__htaGoogleTagInitialized=true;window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){window.dataLayer.push(arguments);};window.gtag('set','linker',{domains:['hopetrainingacademy.org','store.hopetrainingacademy.org','shop.videogamepalooza.org','videogamepalooza.org'],accept_incoming:true});window.gtag('js',new Date());window.gtag('config','AW-826975988');window.gtag('config','G-HB7VCGD91F');var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-826975988';document.head.appendChild(s);})();</script>
+<style>
+:root{--bg:#05080f;--panel:#0d1424;--line:#1e2a44;--text:#e8eefc;--muted:#9aa8c7;--cyan:#38d6ff;--ok:#3ee08f;--bad:#ff6b6b;--btn:#2f7bff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+a{color:var(--cyan)}.wrap{max-width:900px;margin:0 auto;padding:0 16px}
+header{border-bottom:1px solid var(--line);padding:14px 0}header .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{color:var(--text);text-decoration:none;font-weight:700}
+h1{font-size:clamp(1.7rem,4.5vw,2.5rem);line-height:1.15;margin:28px 0 8px}.sub{color:var(--muted);margin:0 0 20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin:18px 0}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}.stat{flex:1 1 120px;background:#0a1020;border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.stat b{display:block;font-size:1.6rem}.stat span{color:var(--muted);font-size:.85rem}
+#text{font:1.2rem/1.8 ui-monospace,Menlo,Consolas,monospace;background:#0a1020;border:1px solid var(--line);border-radius:10px;padding:14px;user-select:none;min-height:120px;word-break:break-word}
+#text .c{color:var(--ok)}#text .x{color:var(--bad);background:#3a1620}#text .cur{border-bottom:2px solid var(--cyan)}
+#input{width:100%;margin-top:12px;padding:14px;font:1.1rem ui-monospace,monospace;background:#fff;color:#111;border-radius:10px;border:2px solid var(--line)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:10px;border:0;font-weight:700;font-size:1rem;cursor:pointer;text-decoration:none;color:#fff;background:var(--btn)}
+.btn.alt{background:transparent;border:1px solid var(--line);color:var(--text)}.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+#result{display:none}#result h2{margin-top:0}.big{font-size:2.6rem;font-weight:800;color:var(--cyan)}
+.field{margin-top:10px}.field label{display:block;font-size:.9rem;color:var(--muted)}.field input{width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);font-size:1rem}
+.note{color:var(--muted);font-size:.82rem}ul{padding-left:20px}footer{border-top:1px solid var(--line);margin-top:40px;padding:20px 0;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="brand" href="/">Hope Training Academy</a><a href="tel:+18555327642">1-855-532-7642</a></div></header>
+<main class="wrap">
+<h1>Free Typing Test</h1>
+<p class="sub">One minute. Start typing the text below and the timer starts automatically. You get your words per minute (WPM) and accuracy instantly. No sign-up needed.</p>
+
+<section class="card" id="test">
+<div class="stats">
+<div class="stat"><b id="t">60</b><span>seconds left</span></div>
+<div class="stat"><b id="w">0</b><span>WPM</span></div>
+<div class="stat"><b id="a">100%</b><span>accuracy</span></div>
+</div>
+<div id="text" aria-label="Text to type"></div>
+<input id="input" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Click here and start typing..." aria-label="Type here"/>
+<div class="row"><button class="btn alt" id="restart" type="button">Restart with new text</button></div>
+</section>
+
+<section class="card" id="result">
+<h2>Your result</h2>
+<p><span class="big" id="rw">0</span> WPM &nbsp; <span class="big" id="ra" style="font-size:1.6rem">0%</span> accuracy</p>
+<p id="verdict"></p>
+<div class="row">
+<button class="btn alt" id="again" type="button">Take the test again</button>
+<a class="btn" id="cta" href="https://store.hopetrainingacademy.org/products/keyboarding-self-guided">Want to type faster? See the Keyboarding course ($141)</a>
+</div>
+<p class="note">Keyboarding (Self-Guided) is a 100% online course that teaches touch-typing with Keyboarding Pro 5, at your own pace. Course access is emailed within 1 business day of purchase.</p>
+</section>
+
+<section class="card">
+<h2 style="margin-top:0">Get a free 2-week typing practice plan</h2>
+<p>Enter your name and email to unlock a simple 14-day practice plan, shown right here on this page. A Hope Training Academy coach may follow up by email about our online courses.</p>
+<form class="lead-form" action="https://api.web3forms.com/submit" method="POST">
+<input name="access_key" type="hidden" value="c6756334-43b4-408d-9242-f925a7e6176c"/><input name="subject" type="hidden" value="New HTA Lead - Free Typing Test"/><input name="from_name" type="hidden" value="Hope Training Academy Website"/><input name="website" type="hidden" value="hopetrainingacademy.org"/><input name="program" type="hidden" value="Keyboarding / Typing"/><input name="referral" type="hidden" value="Free typing test page"/>
+<input name="typing_wpm" type="hidden" id="fwpm" value=""/><input name="typing_accuracy" type="hidden" id="facc" value=""/>
+<div class="field"><label>First name *</label><input name="first_name" required placeholder="First name"/></div>
+<div class="field"><label>Email *</label><input name="email" type="email" required placeholder="you@email.com"/></div>
+<button class="btn" style="width:100%;margin-top:16px" type="submit">Show me the free practice plan</button>
+<p class="note">Your information is kept private and used only to follow up about Hope Training Academy programs. See our <a href="/privacy">Privacy Policy</a>.</p>
+</form>
+</section>
+
+<section class="card">
+<h2 style="margin-top:0">How to type faster: 6 tips that work</h2>
+<ul>
+<li><b>Use home row.</b> Rest your fingers on A S D F and J K L ; and return there after every key.</li>
+<li><b>Don't look down.</b> Looking at the keys caps your speed. Accuracy first; speed follows.</li>
+<li><b>Slow down to speed up.</b> Practice at a pace where you make almost no mistakes, then push a little.</li>
+<li><b>Practice daily, briefly.</b> 10-15 minutes a day beats one long session a week.</li>
+<li><b>Sit well.</b> Wrists level, screen at eye height, feet flat.</li>
+<li><b>Measure.</b> Retake this test once a week to track your WPM.</li>
+</ul>
+<p class="note">Typical guide: around 40 WPM is a common everyday speed; many office and data-entry jobs ask for 40-60+ WPM with high accuracy.</p>
+</section>
+</main>
+<footer><div class="wrap">Hope Training Academy is a workforce-development program of Video Game Palooza, Inc., a 501(c)(3) public charity. <a href="/">Home</a> · <a href="/privacy">Privacy</a></div></footer>
+<script>
+(function(){
+var P=["The quick brown fox jumps over the lazy dog while the busy office team types reports, answers email, and plans the week ahead.",
+"Good typing is a skill anyone can learn. Keep your fingers on the home row, look at the screen, and let accuracy build your speed over time.",
+"Every job today uses a keyboard. Faster, more accurate typing saves time on applications, school work, customer chats, and daily messages.",
+"Practice a little every day. Short sessions help your fingers remember where each key lives, and soon you will type without looking down.",
+"A clear message sent quickly can make a great first impression. Strong typing helps you write resumes, fill out forms, and finish projects."];
+function g(e,p){try{gtag('event',e,p||{});}catch(_){}}
+var T=document.getElementById('text'),I=document.getElementById('input'),tt=document.getElementById('t'),ww=document.getElementById('w'),aa=document.getElementById('a');
+var txt="",start=0,timer=null,done=false,DUR=60,typedTotal=0,errTotal=0,prevLen=0;
+function pick(){var t=[];for(var i=0;i<3;i++)t.push(P[Math.floor(Math.random()*P.length)]);return t.join(" ");}
+function render(v){var h="";for(var i=0;i<txt.length;i++){var c=txt[i].replace(/&/g,"&amp;").replace(/</g,"&lt;");if(i<v.length)h+='<span class="'+(v[i]===txt[i]?'c':'x')+'">'+c+'</span>';else if(i===v.length)h+='<span class="cur">'+c+'</span>';else h+=c;}T.innerHTML=h;}
+function stats(){var v=I.value,el=(Date.now()-start)/60000,ok=0;for(var i=0;i<v.length;i++)if(v[i]===txt[i])ok++;var wpm=el>0?Math.round((ok/5)/el):0,acc=typedTotal?Math.max(0,Math.round(100*(typedTotal-errTotal)/typedTotal)):100;ww.textContent=wpm;aa.textContent=acc+"%";return[wpm,acc];}
+function reset(){clearInterval(timer);timer=null;start=0;done=false;typedTotal=0;errTotal=0;prevLen=0;txt=pick();I.value="";I.disabled=false;tt.textContent=DUR;ww.textContent=0;aa.textContent="100%";render("");document.getElementById('result').style.display="none";}
+function finish(){if(done)return;done=true;clearInterval(timer);I.disabled=true;var s=stats();document.getElementById('rw').textContent=s[0];document.getElementById('ra').textContent=s[1]+"%";
+document.getElementById('fwpm').value=s[0];document.getElementById('facc').value=s[1];
+document.getElementById('verdict').textContent=s[0]<25?"You're building the basics. Learning touch-typing is the fastest way to improve.":s[0]<40?"Solid start. With touch-typing practice most people pass 40 WPM.":s[0]<60?"Above average. Accuracy drills can push you past 60 WPM.":"Fast! You're well above average.";
+var r=document.getElementById('result');r.style.display="block";r.scrollIntoView({behavior:"smooth",block:"start"});g('typing_test_complete',{wpm:s[0],accuracy:s[1]});}
+I.addEventListener('input',function(){if(done)return;var v=I.value;if(!start){start=Date.now();g('typing_test_start');timer=setInterval(function(){var left=Math.max(0,DUR-Math.floor((Date.now()-start)/1000));tt.textContent=left;stats();if(left<=0)finish();},250);}
+if(v.length>prevLen){for(var i=prevLen;i<v.length;i++){typedTotal++;if(v[i]!==txt[i])errTotal++;}}prevLen=v.length;
+render(v);stats();if(v.length>=txt.length){txt+=" "+pick();render(v);}});
+document.getElementById('restart').onclick=reset;document.getElementById('again').onclick=function(){reset();document.getElementById('test').scrollIntoView({behavior:"smooth"});I.focus();};
+document.getElementById('cta').addEventListener('click',function(){g('cta_to_store',{product:'keyboarding-self-guided',page:'free-typing-test'});});
+reset();
+document.querySelectorAll("form.lead-form").forEach(function(f){f.addEventListener("submit",function(e){e.preventDefault();try{fetch("https://crm.cyberhopeai.com/api/method/hta_lead_intake",{method:"POST",mode:"no-cors",body:new FormData(f)});}catch(_){}var btn=f.querySelector("[type=submit]");var old=btn?btn.textContent:"";if(btn){btn.disabled=true;btn.textContent="Sending…";}var data={};new FormData(f).forEach(function(v,k){data[k]=v;});fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(data)}).then(function(r){return r.json();}).then(function(j){if(j.success){g('generate_lead',{form:'free_typing_test'});f.innerHTML='<div><h3>Your 14-day typing practice plan</h3><ol><li><b>Days 1-3:</b> 10 min home-row drills (asdf jkl;), eyes on screen only.</li><li><b>Days 4-6:</b> add the top row; 10 min drills + 1 test.</li><li><b>Days 7-9:</b> add the bottom row and numbers; type short sentences slowly with no mistakes.</li><li><b>Days 10-12:</b> 15 min of real text (emails, articles); aim for 95%+ accuracy.</li><li><b>Days 13-14:</b> retake this test and compare with day 1.</li></ol><p>Want structured lessons? The <a href="https://store.hopetrainingacademy.org/products/keyboarding-self-guided">Keyboarding course</a> teaches touch-typing step by step. Questions? Call 1-855-532-7642.</p></div>';}else{throw new Error(j.message||"failed");}}).catch(function(){if(btn){btn.disabled=false;btn.textContent=old;}var m=f.querySelector(".form-err");if(!m){m=document.createElement("p");m.className="form-err";m.style.cssText="color:#ff6b6b;margin-top:10px";f.appendChild(m);}m.textContent="Something went wrong. Please call 1-855-532-7642 or try again.";});});});
+})();
+</script>
+</body>
+</html>
