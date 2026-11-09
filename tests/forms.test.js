@@ -113,5 +113,10 @@ test("the 4 pages with a lead form carry exactly one hidden botcheck honeypot in
     assert.match(traps[0], /type="checkbox"/);
     assert.match(traps[0], /display:none/);
     assert.match(traps[0], /tabindex="-1"/);
+    // the browser stops what the CRM would refuse or cut (astra review of #11)
+    const email = form.match(/<input[^>]*name="email"[^>]*>/g);
+    assert.strictEqual(email.length, 1, p);
+    assert.match(email[0], /maxlength="140"/, p);
+    for (const m of form.match(/<textarea[^>]*name="message"[^>]*>/g) || []) assert.match(m, /maxlength="1500"/, p);
   }
 });

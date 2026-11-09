@@ -12,17 +12,26 @@ const ORIGINS = new Set(["https://hopetrainingacademy.org", "https://www.hopetra
 const MAX_BODY_BYTES = 16 * 1024;
 const CRM_TIMEOUT_MS = 5000;
 const EMAIL_RE = /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/;
+// End-to-end limits shared with the CRM intake (entropy-crm #30): it rejects an email over 140 characters and
+// stores at most 2000 characters of description. The relay enforces both instead of letting the CRM refuse or
+// truncate silently (astra-silverbullet review of #11).
+const EMAIL_MAX = 140;
+const DESCRIPTION_MAX = 2000;
+const SHORTENED = " [message shortened]";
 
 // Forwarded as-is (trimmed, length-capped): the fields the CRM intake reads.
 const PASS = {
-  first_name: 100, last_name: 100, email: 254, phone: 40, program: 200, referral: 200, audience: 100,
+  first_name: 100, last_name: 100, email: EMAIL_MAX, phone: 40, program: 200, referral: 200, audience: 100,
   sms_consent: 10, sms_consent_version: 80, email_consent: 10, state: 40, zip: 10,
 };
-// Fields the intake does not read: folded into `description` so nothing the visitor typed is lost.
+// Fields the intake does not read: folded into `description` so nothing the visitor typed is lost. The short
+// structured fields come first; the free-text message comes LAST and gets whatever room is left within
+// DESCRIPTION_MAX, marked if it had to be cut, so the CRM never truncates the structured fields away.
 const FOLD = [
-  ["message", "Message", 2000], ["intent", "Interest", 200], ["experience", "Experience", 500],
+  ["intent", "Interest", 200], ["experience", "Experience", 500],
   ["typing_wpm", "Typing test wpm", 10], ["typing_accuracy", "Typing test accuracy", 10],
 ];
+const MESSAGE = ["message", "Message", 2000];
 // Ad attribution: read from the landing URL's query string, never taken from the body.
 const ATTRIBUTION = ["gclid", "gbraid", "wbraid", "utm_source", "utm_campaign"];
 
@@ -60,7 +69,14 @@ function build(body) {
     const v = text(body[k], cap);
     if (v) parts.push(`${label}: ${v}`);
   }
-  if (parts.length) out.description = parts.join(" | ").slice(0, 4000);
+  const msg = text(body[MESSAGE[0]], MESSAGE[2]);
+  if (msg) {
+    const head = parts.length ? parts.join(" | ") + " | " : "";
+    const prefix = `${MESSAGE[1]}: `;
+    const room = DESCRIPTION_MAX - head.length - prefix.length;
+    parts.push(prefix + (msg.length <= room ? msg : msg.slice(0, room - SHORTENED.length) + SHORTENED));
+  }
+  if (parts.length) out.description = parts.join(" | ");
   const page = text(body.page, 200).split(/[?#]/)[0];
   if (page.startsWith("/")) out.page = page;
   const u = landing(body.landing_url);
@@ -111,8 +127,9 @@ async function handler(req, res) {
   if (parsed.bad) return done(res, 400, "body");
   const body = parsed.body;
   if (text(body.botcheck, 10)) return done(res, 204, "honeypot"); // bots get a quiet success
+  const email = text(body.email, 1000);
+  if (!email || email.length > EMAIL_MAX || !EMAIL_RE.test(email)) return done(res, 400, "email"); // never cut an email
   const fields = build(body);
-  if (!fields.email || !EMAIL_RE.test(fields.email)) return done(res, 400, "email");
   const secret = process.env.HTA_INTAKE_RELAY_SECRET;
   if (!secret) return done(res, 503, "unconfigured"); // fail closed: nothing forwarded
   let r;
@@ -135,3 +152,5 @@ async function handler(req, res) {
 module.exports = handler;
 module.exports.build = build;
 module.exports.CRM_URL = CRM_URL;
+module.exports.EMAIL_MAX = EMAIL_MAX;
+module.exports.DESCRIPTION_MAX = DESCRIPTION_MAX;

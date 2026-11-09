@@ -82,8 +82,8 @@ test("folds the fields the intake does not read into description; zip stays its 
                  experience: "Some IT", typing_wpm: "52", typing_accuracy: "97", zip: "46204" };
   const { calls } = await run({ body });
   const f = calls[0].form;
-  assert.strictEqual(f.description, "Message: Can I tour on Friday? | Interest: Book a tour | Experience: Some IT | " +
-                                    "Typing test wpm: 52 | Typing test accuracy: 97");
+  assert.strictEqual(f.description, "Interest: Book a tour | Experience: Some IT | Typing test wpm: 52 | " +
+                                    "Typing test accuracy: 97 | Message: Can I tour on Friday?");
   assert.strictEqual(f.zip, "46204");
   for (const k of ["message", "intent", "experience", "typing_wpm", "typing_accuracy"]) assert.ok(!(k in f), k);
 });
@@ -94,7 +94,7 @@ test("caps field lengths and strips control characters", async () => {
   const f = calls[0].form;
   assert.strictEqual(f.first_name.length, 100);
   assert.strictEqual(f.zip.length, 10);
-  assert.ok(f.description.startsWith("Message: line1 line2 x"));
+  assert.strictEqual(f.description, "Message: line1 line2 x");
 });
 
 test("page is a path only; a foreign or non-https landing_url is dropped with its attribution", async () => {
@@ -180,4 +180,32 @@ test("logs carry status and outcome only: never the secret, an email or a name",
   const all = logs.join("\n");
   for (const s of [SECRET, GOOD.email, GOOD.first_name, GOOD.phone]) assert.ok(!all.includes(s), s);
   assert.deepStrictEqual(JSON.parse(logs[0]), { relay: "lead", status: 204, outcome: "forwarded" });
+});
+
+test("email length matches the CRM intake: 140 is forwarded, 141 is refused (never cut)", async () => {
+  assert.strictEqual(handler.EMAIL_MAX, 140);
+  const at140 = "a".repeat(140 - "@example.invalid".length) + "@example.invalid";
+  const at141 = "a" + at140;
+  assert.strictEqual(at140.length, 140);
+  const ok = await run({ body: { ...GOOD, email: at140 } });
+  assert.strictEqual(ok.r.statusCode, 204);
+  assert.strictEqual(ok.calls[0].form.email, at140);
+  const bad = await run({ body: { ...GOOD, email: at141 } });
+  assert.strictEqual(bad.r.statusCode, 400);
+  assert.strictEqual(bad.calls.length, 0);
+});
+
+test("description stays within the CRM's 2000 characters and never loses the structured fields", async () => {
+  assert.strictEqual(handler.DESCRIPTION_MAX, 2000);
+  const body = { first_name: "C", email: "c@example.invalid", intent: "I".repeat(200), experience: "E".repeat(500),
+                 typing_wpm: "52", typing_accuracy: "97", message: "M".repeat(2000) };
+  const { calls } = await run({ body });
+  const d = calls[0].form.description;
+  assert.strictEqual(d.length, 2000);
+  for (const part of ["Interest: " + "I".repeat(200), "Experience: " + "E".repeat(500), "Typing test wpm: 52",
+                      "Typing test accuracy: 97"]) assert.ok(d.includes(part), part.slice(0, 20));
+  assert.ok(d.endsWith("[message shortened]"));
+  const fits = await run({ body: { ...body, message: "short note" } });
+  assert.ok(fits.calls[0].form.description.endsWith("Message: short note"));
+  assert.ok(!fits.calls[0].form.description.includes("shortened"));
 });
