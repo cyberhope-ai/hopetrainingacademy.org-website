@@ -71,8 +71,8 @@ function sandbox(pathname, fields) {
   return { ctx, calls, storage, submit: () => submit && submit({ preventDefault() {} }) };
 }
 
-test("58 pages carry the shared lead-form script", () => {
-  assert.strictEqual(PAGES.length, 58);
+test("59 pages carry the shared lead-form script", () => {
+  assert.strictEqual(PAGES.length, 59);  // +apprenticeship-paths (card 1142)
 });
 
 for (const file of PAGES) {
@@ -102,10 +102,11 @@ for (const file of PAGES) {
   });
 }
 
-test("the 4 pages with a lead form carry exactly one hidden botcheck honeypot inside it", () => {
+test("the 5 pages with a lead form carry exactly one hidden botcheck honeypot inside it", () => {
   const withForm = PAGES.filter((p) => /<form\b[^>]*lead-form/.test(fs.readFileSync(p, "utf8")));
   assert.deepStrictEqual(withForm.map((p) => path.relative(ROOT, p)).sort(),
-    ["ai-apprenticeship-indiana/index.html", "campus.html", "free-typing-test/index.html", "index.html"]);
+    ["ai-apprenticeship-indiana/index.html", "apprenticeship-paths/index.html", "campus.html", "free-typing-test/index.html",
+     "index.html"]);
   for (const p of withForm) {
     const form = fs.readFileSync(p, "utf8").match(/<form\b[^>]*lead-form[^>]*>([\s\S]*?)<\/form>/)[1];
     const traps = form.match(/<input[^>]*name="botcheck"[^>]*>/g) || [];
