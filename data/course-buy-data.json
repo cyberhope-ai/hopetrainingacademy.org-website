@@ -1,5 +1,4 @@
 [
-  {"slug": "keyboarding-self-guided", "name": "Keyboarding (Self-Guided)", "variant_id": 47318349742268, "price": "141.00", "sku": "_T9233", "available": true},
   {"slug": "prepare-for-the-ged-test-self-guided", "name": "Prepare for the GED Test (Self-Guided)", "variant_id": 47318533406908, "price": "146.00", "sku": "_T9311", "available": true},
   {"slug": "medical-terminology-a-word-association-approach-self-guided", "name": "Medical Terminology: A Word Association Approach (Self-Guided)", "variant_id": 47318529081532, "price": "154.00", "sku": "_T8450", "available": true},
   {"slug": "teas-prep-1-self-guided", "name": "TEAS Prep 1 (Self-Guided)", "variant_id": 47318547726524, "price": "141.00", "sku": "_T9567", "available": true},
@@ -12,7 +11,6 @@
   {"slug": "color-theory", "name": "Color Theory", "variant_id": 47318499655868, "price": "101.00", "sku": "_T9785", "available": true},
   {"slug": "a-to-z-grant-writing-self-guided", "name": "A to Z Grant Writing (Self-Guided)", "variant_id": 47318488187068, "price": "143.00", "sku": "_T8492", "available": true},
   {"slug": "introduction-to-microsoft-word-365-self-guided", "name": "Introduction to Microsoft Word 365 (Self-Guided)", "variant_id": 47318345285820, "price": "163.00", "sku": "_T14885", "available": true},
-  {"slug": "keyboarding", "name": "Keyboarding", "variant_id": 47318349709500, "price": "141.00", "sku": "_key", "available": true},
   {"slug": "become-an-optical-assistant", "name": "Become an Optical Assistant", "variant_id": 47318493462716, "price": "155.00", "sku": "_bot", "available": true},
   {"slug": "drawing-for-the-absolute-beginner", "name": "Drawing for the Absolute Beginner", "variant_id": 47318509060284, "price": "129.00", "sku": "_drw", "available": true},
   {"slug": "music-made-easy", "name": "Music Made Easy", "variant_id": 47318529441980, "price": "129.00", "sku": "_lrm", "available": true},
