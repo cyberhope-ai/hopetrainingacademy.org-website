@@ -36,6 +36,12 @@ QUALIFY = '<a class="cta ghost" href="https://hopetrainingacademy.org/#register"
 NO_CERTIFICATION = re.compile(
     r"(?:does not|doesn't|do not|is not|isn't|\bno\b|rather than)(?![^.<]{0,70}\b(?:prior|prerequisite|required?|needed)\b)"
     r"[^.<]{0,70}\bcertification", re.I)
+# CEO card 1388 (2026-11-13), answer B: on a page that sells one course, the apprenticeship section becomes one
+# true sentence: the Academy also sponsors registered apprenticeships, separate from this course, with a link.
+APPRENTICESHIP_SECTION = re.compile(r'<h2>Registered Apprenticeship[^<]*</h2>\s*<div class="card">(?:(?!<div).)*?</div>', re.S)
+APPRENTICESHIP_NOTE = ('<h2>Registered apprenticeships</h2>\n  <div class="card" data-apprenticeship-note="1"><p>Hope Training Academy also '
+                       'sponsors registered apprenticeships through the United States Department of Labor, as a separate program '
+                       'from this course (<a href="https://hopetrainingacademy.org/apprenticeship-paths/">see the apprenticeship paths</a>).</p></div>')
 OLD_OFFER = re.compile(r'("offers": \{"@type": "Offer", "price": ")[0-9.]+(")')
 PROMISE = re.compile(r'(<h1>[^<]*</h1><p class="promise">.*?</p>\n)', re.S)
 
@@ -72,6 +78,8 @@ def render(page, row):
     page = page.replace(CHIP_APPRENTICESHIP, "").replace(QUALIFY, "")
     if NO_CERTIFICATION.search(page):
         page = page.replace(CHIP_CERTIFICATION, "")
+    # card 1388: one true sentence in place of the apprenticeship section (the note itself no longer matches the pattern)
+    page = APPRENTICESHIP_SECTION.sub(lambda m: APPRENTICESHIP_NOTE, page, count=1)
     # the page's older course data carries its own copy of the price: keep it equal to the data file
     page = OLD_OFFER.sub(lambda m: m.group(1) + row["price"] + m.group(2), page)
     if row["available"]:

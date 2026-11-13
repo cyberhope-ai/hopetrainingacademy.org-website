@@ -18,6 +18,12 @@ test("the committed pages match the data file (running the script changes nothin
   assert.match(out, / 0 differ/);
 });
 
+test("the certification badge stays where the page does not deny a certification", () => {
+  // kali-claude's note on #18: without this, a tool that removed the badge everywhere would pass
+  for (const slug of ["prepare-for-the-ged-test", "prepare-for-the-ged-test-self-guided", "prepare-for-the-ged-math-test", "teas-prep-1-self-guided", "supply-chain-management-fundamentals"])
+    assert.ok(page(slug).includes("Industry certification</span>"), slug);
+});
+
 for (const row of rows) {
   test(`${row.slug}: price and one-click checkout directly under the title`, () => {
     const html = page(row.slug);
@@ -44,6 +50,11 @@ for (const row of rows) {
     assert.strictEqual(product["@type"], "Product");
     assert.strictEqual(product.offers.price, row.price);
     assert.strictEqual(product.offers.url, `https://hopetrainingacademy.org/courses/${row.slug}/`);
+    // card 1388: the apprenticeship section is one sentence that separates the program from this course
+    assert.ok(!/<h2>Registered Apprenticeship —/.test(html) && !html.includes("Registered Apprenticeship pathway</p>"), "the old apprenticeship section is gone");
+    const notes = html.split('data-apprenticeship-note="1"').length - 1;
+    assert.ok(notes <= 1, "at most one apprenticeship note");
+    if (notes) assert.ok(html.includes("as a separate program from this course") && html.includes('href="https://hopetrainingacademy.org/apprenticeship-paths/"'));
     // card 1382: no apprenticeship badge, no second action, and no certification badge on a page that says there is none
     assert.ok(!html.includes("USDOL Registered Apprenticeship</span>"), "no apprenticeship badge on a course sales page");
     assert.ok(!html.includes("Check if you qualify"), "Enroll is the only action");
