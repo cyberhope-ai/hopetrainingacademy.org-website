@@ -54,6 +54,24 @@ APPRENTICESHIP_NOTE_TEXT = re.compile(re.escape(APPRENTICESHIP_NOTE))
 # only place the pages still say it)
 CLAIM = re.compile(r"USDOL|\bDOL\b|(?<!Statistics, U\.S\. )Department of Labor|industry-recognized credential"
                    r"|registered apprentice", re.I)
+# CEO card course-pages-certification-sentences-restore-2026-11-13 (answer A, 2026-11-13 15:17Z): on a page for a
+# real outside certification whose own text does not deny a certification, a sentence that calls THAT
+# certification "an industry-recognized credential" is true and stays (the credential belongs to CompTIA, IOFM,
+# SME, Cisco or The Travel Institute, not to the Academy). Everywhere else the phrase keeps being removed, and
+# nothing about apprenticeships or the Department of Labor comes back. The list is explicit on purpose: eight
+# other pages lost a sentence with the phrase that is apprenticeship wording ("earn while you learn", "paid
+# on-the-job learning", "de-risks your career change"); those are NOT restored.
+CREDENTIAL_PAGES = frozenset((
+    "accounts-payable-specialist-certification-exam-cost-included",
+    "certified-manufacturing-associate-cmfga",
+    "cisco-ccnp-enterprise-encor-enarsi",
+    "comptia-certification-training-a-network-security-vouchers-included",
+    "comptia-certification-training-network-security-vouchers-included",
+    "robotics-in-manufacturing-fundamentals-rmf-voucher-included",
+    "travel-agent-training-exam-cost-included",
+))
+CLAIM_ALL = CLAIM
+CLAIM_KEEPING_CREDENTIAL = re.compile(r"USDOL|\bDOL\b|(?<!Statistics, U\.S\. )Department of Labor|registered apprentice", re.I)
 INDIANA = re.compile(r'[ \t]*<div class="indiana">(?:(?!<div).)*?</div>\n?', re.S)
 MILESTONE = re.compile(r"<div class='mil'><b>[^<]*</b><span>([^<]*)</span></div>")
 FAQ_ITEM = re.compile(r"<details><summary>([^<]*)</summary><p>([^<]*)</p></details>")
@@ -252,7 +270,13 @@ def clean_other(page, slug):
     if NO_CERTIFICATION.search(page):
         page = page.replace(CHIP_CERTIFICATION, "")
     page = APPRENTICESHIP_SECTION.sub(lambda m: APPRENTICESHIP_NOTE, page, count=1)
-    return remove_remaining_lines(page, {"slug": slug, "name": html.unescape(title.group(1))})
+    global CLAIM
+    keep_credential = slug in CREDENTIAL_PAGES and not NO_CERTIFICATION.search(page)
+    CLAIM = CLAIM_KEEPING_CREDENTIAL if keep_credential else CLAIM_ALL
+    try:
+        return remove_remaining_lines(page, {"slug": slug, "name": html.unescape(title.group(1))})
+    finally:
+        CLAIM = CLAIM_ALL
 
 
 def main(argv):

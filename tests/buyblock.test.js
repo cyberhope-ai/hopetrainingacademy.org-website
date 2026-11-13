@@ -40,6 +40,32 @@ test("card 1393: the Indiana line, Department of Labor mentions and 'industry-re
   }
 });
 
+// CEO card course-pages-certification-sentences-restore-2026-11-13 (answer A): seven pages for a real outside
+// certification keep the sentence that calls that certification "an industry-recognized credential".
+const CREDENTIAL_PAGES = new Map([
+  ["accounts-payable-specialist-certification-exam-cost-included", "prepare you for the current IOFM Accounts Payable Specialist (APS) certification exam, an industry-recognized credential."],
+  ["certified-manufacturing-associate-cmfga", "This industry-recognized credential demonstrates your foundational knowledge in essential manufacturing concepts"],
+  ["cisco-ccnp-enterprise-encor-enarsi", "This program focuses on practical skills and industry-recognized credentials."],
+  ["comptia-certification-training-a-network-security-vouchers-included", "These CompTIA certifications are industry-recognized credentials that validate your skills directly."],
+  ["comptia-certification-training-network-security-vouchers-included", "covering the cost to sit for these industry-recognized credentials."],
+  ["robotics-in-manufacturing-fundamentals-rmf-voucher-included", "This industry-recognized credential, developed by leading organizations like SME and FIRST"],
+  ["travel-agent-training-exam-cost-included", "offered by The Travel Institute, is included with this program, allowing you to pursue an industry-recognized credential"],
+]);
+
+test("certification sentences card (A): the true sentence is back on the seven approved pages, and only there", () => {
+  const denies = /(?:does not|doesn't|do not|is not|isn't|\bno\b|rather than)(?![^.<]{0,70}\b(?:prior|prerequisite|required?|needed)\b)[^.<]{0,70}\bcertification/i;
+  const inData = new Set(rows.map((r) => r.slug));
+  for (const [slug, sentence] of CREDENTIAL_PAGES) {
+    const html = page(slug);
+    assert.ok(!inData.has(slug), slug + ": is one of the pages without a Buy button, as the card said");
+    assert.ok(html.includes(sentence), slug + ": the restored sentence is on the page");
+    assert.ok(!denies.test(html), slug + ": the page itself does not deny a certification");
+    assert.ok(!/earn while you learn|on-the-job|de-risk/i.test(html), slug + ": no apprenticeship wording came back");
+  }
+  const withPhrase = fs.readdirSync(path.join(ROOT, "courses")).filter((d) => fs.existsSync(path.join(ROOT, "courses", d, "index.html")) && /industry-recognized credential/i.test(page(d)));
+  assert.deepStrictEqual(withPhrase.sort(), [...CREDENTIAL_PAGES.keys()].sort());
+});
+
 test("card 1409: the 576 course pages without a Buy button are cleaned the same way, and no page says 'registered apprenticeship' outside the one sentence", () => {
   const note = "sponsors registered apprenticeships through the United States Department of Labor, as a separate program from this course";
   const inData = new Set(rows.map((r) => r.slug));
@@ -50,7 +76,8 @@ test("card 1409: the 576 course pages without a Buy button are cleaned the same 
   for (const slug of all) {
     const html = page(slug);
     const rest = html.split(note).join("").split("<h2>Registered apprenticeships</h2>").join("").split("Bureau of Labor Statistics, U.S. Department of Labor").join("");
-    assert.ok(!/USDOL|\bDOL\b|Department of Labor|industry-recognized credential|registered apprentice/i.test(rest), slug + ": a claim is left");
+    assert.ok(!/USDOL|\bDOL\b|Department of Labor|registered apprentice/i.test(rest), slug + ": a claim is left");
+    if (!CREDENTIAL_PAGES.has(slug)) assert.ok(!/industry-recognized credential/i.test(rest), slug + ": the phrase is left on a page that is not on the approved list");
     assert.ok(!html.includes('<div class="indiana">'), slug + ": Indiana line");
     assert.ok(!html.includes("USDOL Registered Apprenticeship</span>"), slug + ": apprenticeship badge");
     for (const m of html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)) JSON.parse(m[1]);
