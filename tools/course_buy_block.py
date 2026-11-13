@@ -42,6 +42,104 @@ APPRENTICESHIP_SECTION = re.compile(r'<h2>Registered Apprenticeship[^<]*</h2>\s*
 APPRENTICESHIP_NOTE = ('<h2>Registered apprenticeships</h2>\n  <div class="card" data-apprenticeship-note="1"><p>Hope Training Academy also '
                        'sponsors registered apprenticeships through the United States Department of Labor, as a separate program '
                        'from this course (<a href="https://hopetrainingacademy.org/apprenticeship-paths/">see the apprenticeship paths</a>).</p></div>')
+APPRENTICESHIP_NOTE_TEXT = re.compile(re.escape(APPRENTICESHIP_NOTE))
+# card 1393 (A): three more things leave the course sales pages. The one sentence from card 1388 stays.
+# a wage-source citation ("Bureau of Labor Statistics, U.S. Department of Labor") is not a claim and stays
+CLAIM = re.compile(r"USDOL|\bDOL\b|(?<!Statistics, U\.S\. )Department of Labor|industry-recognized credential", re.I)
+INDIANA = re.compile(r'[ \t]*<div class="indiana">(?:(?!<div).)*?</div>\n?', re.S)
+MILESTONE = re.compile(r"<div class='mil'><b>[^<]*</b><span>([^<]*)</span></div>")
+FAQ_ITEM = re.compile(r"<details><summary>([^<]*)</summary><p>([^<]*)</p></details>")
+FAQ_EMPTY = re.compile(r"<h2>Frequently asked questions</h2>(?!<details>)")
+PLAIN_P = re.compile(r"<p>([^<]*)</p>")
+META = re.compile(r'<meta name="(description|keywords)" content="([^"]*)">')
+LD = re.compile(r'(<script type="application/ld\+json">)(.*?)(</script>)', re.S)
+SENTENCE_END = re.compile(r"(?<=[.!?])(?<!Inc\.)(?<!U\.S\.)(?<!e\.g\.)(?<!i\.e\.)(?<!vs\.)\s+")
+
+
+def without_claims(text):
+    """The text without any sentence that carries one of the card 1393 claims."""
+    return " ".join(part for part in SENTENCE_END.split(text) if not CLAIM.search(part)).strip()
+
+
+def keywords_without_claims(text):
+    return ", ".join(word for word in text.split(", ")
+                     if not CLAIM.search(word) and word.strip().lower() != "registered apprenticeship")
+
+
+def clean_data(node, fallback):
+    """The page's own search data (JSON-LD) under the same rule; returns the cleaned node, or None to drop it."""
+    if isinstance(node, list):
+        return [kept for kept in (clean_data(item, fallback) for item in node) if kept is not None]
+    if not isinstance(node, dict):
+        return node
+    if node.get("@type") == "Question":
+        answer = node.get("acceptedAnswer", {})
+        if CLAIM.search(node.get("name", "")):
+            return None
+        if CLAIM.search(answer.get("text", "")):
+            answer["text"] = without_claims(answer["text"])
+            if not answer["text"]:
+                return None
+        return node
+    out = {}
+    for key, value in node.items():
+        if isinstance(value, str) and CLAIM.search(value):
+            value = keywords_without_claims(value) if key == "keywords" else (without_claims(value) or fallback)
+        elif isinstance(value, (dict, list)):
+            value = clean_data(value, fallback)
+        out[key] = value
+    if out.get("@type") == "FAQPage" and not out.get("mainEntity"):
+        return None
+    return out
+
+
+def remove_remaining_lines(page, row):
+    fallback = f"{row['name']}: online course from Hope Training Academy."
+    note = page.find('data-apprenticeship-note="1"')
+    page = INDIANA.sub("", page)
+    page = MILESTONE.sub(lambda m: "" if CLAIM.search(m.group(1)) else m.group(0), page)
+
+    def faq(m):
+        if CLAIM.search(m.group(1)):
+            return ""
+        if not CLAIM.search(m.group(2)):
+            return m.group(0)
+        answer = without_claims(m.group(2))
+        return f"<details><summary>{m.group(1)}</summary><p>{answer}</p></details>" if answer else ""
+    page = FAQ_ITEM.sub(faq, page)
+    page = FAQ_EMPTY.sub("", page)
+
+    def paragraph(m):
+        if not CLAIM.search(m.group(1)):
+            return m.group(0)
+        text = without_claims(m.group(1))
+        return f"<p>{text}</p>" if text else ""
+    page = PLAIN_P.sub(paragraph, page)
+
+    def meta(m):
+        if not CLAIM.search(m.group(2)):
+            return m.group(0)
+        content = (keywords_without_claims(m.group(2)) if m.group(1) == "keywords"
+                   else without_claims(m.group(2)) or html.escape(fallback))
+        return f'<meta name="{m.group(1)}" content="{content}">'
+    page = META.sub(meta, page)
+
+    def data(m):
+        if not CLAIM.search(m.group(2)):
+            return m.group(0)
+        return m.group(1) + json.dumps(clean_data(json.loads(m.group(2)), fallback)) + m.group(3)
+    page = LD.sub(data, page)
+    # nothing may be left except the card 1388 sentence; a page that still carries a claim is not written
+    rest = APPRENTICESHIP_NOTE_TEXT.sub("", page)
+    left = CLAIM.search(rest)
+    if left:
+        raise ValueError(f"{row['slug']}: a card 1393 line is left in a place this tool does not know: "
+                         + rest[max(0, left.start() - 80):left.end() + 40].replace("\n", " "))
+    if note >= 0 and 'data-apprenticeship-note="1"' not in page:
+        raise ValueError(f"{row['slug']}: the card 1388 sentence was lost")
+    return page
+
+
 OLD_OFFER = re.compile(r'("offers": \{"@type": "Offer", "price": ")[0-9.]+(")')
 PROMISE = re.compile(r'(<h1>[^<]*</h1><p class="promise">.*?</p>\n)', re.S)
 
@@ -80,6 +178,8 @@ def render(page, row):
         page = page.replace(CHIP_CERTIFICATION, "")
     # card 1388: one true sentence in place of the apprenticeship section (the note itself no longer matches the pattern)
     page = APPRENTICESHIP_SECTION.sub(lambda m: APPRENTICESHIP_NOTE, page, count=1)
+    # card 1393: the Indiana line, the Department of Labor mentions and "industry-recognized credential"
+    page = remove_remaining_lines(page, row)
     # the page's older course data carries its own copy of the price: keep it equal to the data file
     page = OLD_OFFER.sub(lambda m: m.group(1) + row["price"] + m.group(2), page)
     if row["available"]:
