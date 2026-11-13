@@ -49,6 +49,9 @@ for (const row of rows) {
     assert.ok(!html.includes("Check if you qualify"), "Enroll is the only action");
     if (/(?:does not|doesn't|do not|is not|isn't|\bno\b|rather than)(?![^.<]{0,70}\b(?:prior|prerequisite|required?|needed)\b)[^.<]{0,70}\bcertification/i.test(html))
       assert.ok(!html.includes("Industry certification</span>"), "no certification badge where the page says there is none");
-    assert.ok(!/\bschool\b/i.test(html.slice(html.indexOf("<!-- buy-block:start -->"), html.indexOf("<!-- buy-block:end -->"))));
+    // the grant rule is about how the Academy describes itself; a course whose own title contains the word is fine
+    const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#x27;");
+    const ours = html.slice(html.indexOf("<!-- buy-block:start -->"), html.indexOf("<!-- buy-block:end -->")).split(esc(row.name)).join("").split(JSON.stringify(row.name)).join("");
+    assert.ok(!/\bschool\b/i.test(ours), "the buy block does not call the Academy a school");
   });
 }
