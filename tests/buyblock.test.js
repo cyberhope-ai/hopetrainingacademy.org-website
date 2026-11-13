@@ -53,7 +53,9 @@ for (const row of rows) {
     // card 1388: the apprenticeship section is one sentence that separates the program from this course
     assert.ok(!/<h2>Registered Apprenticeship —/.test(html) && !html.includes("Registered Apprenticeship pathway</p>"), "the old apprenticeship section is gone");
     const notes = html.split('data-apprenticeship-note="1"').length - 1;
-    assert.ok(notes <= 1, "at most one apprenticeship note");
+    // kali-claude's note on #20: the note must be present, not only "at most one"; one page never had the section
+    const neverHadSection = ["medical-terminology-a-word-association-approach-self-guided"];
+    assert.strictEqual(notes, neverHadSection.includes(row.slug) ? 0 : 1, "exactly one apprenticeship note");
     if (notes) assert.ok(html.includes("as a separate program from this course") && html.includes('href="https://hopetrainingacademy.org/apprenticeship-paths/"'));
     // card 1382: no apprenticeship badge, no second action, and no certification badge on a page that says there is none
     assert.ok(!html.includes("USDOL Registered Apprenticeship</span>"), "no apprenticeship badge on a course sales page");
