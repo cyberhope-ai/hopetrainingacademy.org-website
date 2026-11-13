@@ -35,7 +35,7 @@ for (const row of rows) {
     assert.ok(box.includes(`href="${cart}"`), "button goes to checkout for this variant");
     assert.ok(box.includes(`Enroll now · ${label(row.price)}`), "button shows the price");
     assert.ok(box.includes(`"item_id": "${row.sku}"`) && box.includes("begin_checkout"), "begin_checkout carries the item");
-    assert.strictEqual(html.split(`href="https://store.hopetrainingacademy.org/products/${row.slug}"`).length, 1, "no link still sends the buyer to a second page");
+    assert.strictEqual(html.split(`href="https://store.hopetrainingacademy.org/products/${row.store_handle || row.slug}"`).length, 1, "no link still sends the buyer to a second page");
     const course = html.match(/"offers": \{"@type": "Offer", "price": "([0-9.]+)"/);
     if (course) assert.strictEqual(course[1], row.price, "the page's existing course data shows the same price");
     assert.ok(html.split(`data-buy="1" href="${cart}"`).length >= 3, "the button is repeated lower on the page");

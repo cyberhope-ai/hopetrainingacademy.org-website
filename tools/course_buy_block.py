@@ -7,7 +7,8 @@ pages: price and Buy button at the top, one click to the same checkout".
   python3 tools/course_buy_block.py            apply data/course-buy-data.json to courses/<slug>/index.html
   python3 tools/course_buy_block.py --check    change nothing; list pages that differ from the data file (exit 1)
 
-One row per course in the data file: slug (= store product handle), name, variant_id, price, sku, available.
+One row per course in the data file: slug, name, variant_id, price, sku, available, and store_handle only when
+the store product's handle differs from the page slug.
 The rows come from a Shopify product export, never from scraping the store. Running it twice changes nothing.
 Everything this script writes sits between buy-block markers or is a link carrying data-buy, so it can always
 find and replace its own work and touches nothing else on the page.
@@ -60,11 +61,14 @@ def validate(row):
         raise ValueError(f"{row['slug']}: variant_id must be a positive integer")
     if type(row["available"]) is not bool or not row["name"].strip() or not row["sku"].strip():
         raise ValueError(f"{row['slug']}: name, sku and available are required")
+    if "store_handle" in row and not re.fullmatch(r"[a-z0-9][a-z0-9-]*", row["store_handle"]):
+        raise ValueError(f"{row['slug']}: bad store_handle")
     money(row["price"])
 
 
 def render(page, row):
-    slug, product = row["slug"], f"{STORE}/products/{row['slug']}"
+    slug = row["slug"]
+    product = f"{STORE}/products/{row.get('store_handle') or slug}"   # the store handle can differ from the page slug
     cart = f"{STORE}/cart/{row['variant_id']}:1"
     # 1. undo our own earlier work, so the result depends only on the original page and the data row
     page = BLOCK.sub("", page)

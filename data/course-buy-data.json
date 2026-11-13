@@ -702,5 +702,6 @@
   {"slug": "writing-support-for-english-language-learners", "name": "Writing Support for English Language Learners", "variant_id": 47318552215740, "price": "84.00", "sku": "_T14767", "available": true},
   {"slug": "writing-the-fantasy-novel", "name": "Writing the Fantasy Novel", "variant_id": 47318552248508, "price": "129.00", "sku": "_wfn", "available": true},
   {"slug": "writing-the-fantasy-novel-self-guided", "name": "Writing the Fantasy Novel (Self-Guided)", "variant_id": 47318552314044, "price": "129.00", "sku": "_T14113", "available": true},
-  {"slug": "writing-young-adult-fiction", "name": "Writing Young Adult Fiction", "variant_id": 47318552379580, "price": "129.00", "sku": "_wyf", "available": true}
+  {"slug": "writing-young-adult-fiction", "name": "Writing Young Adult Fiction", "variant_id": 47318552379580, "price": "129.00", "sku": "_wyf", "available": true},
+  {"slug": "guided-reading-and-writing-strategies-for-maximum-student-achievement-self-guide", "name": "Guided Reading and Writing: Strategies for Maximum Student Achievement (Self-Guided)", "variant_id": 47318515220668, "price": "144.00", "sku": "_T9292", "available": true, "store_handle": "guided-reading-and-writing-strategies-for-maximum-student-achievement-self-guided"}
 ]
