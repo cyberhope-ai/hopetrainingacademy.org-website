@@ -11,6 +11,11 @@ One row per course in the data file: slug (= store product handle), name, varian
 The rows come from a Shopify product export, never from scraping the store. Running it twice changes nothing.
 Everything this script writes sits between buy-block markers or is a link carrying data-buy, so it can always
 find and replace its own work and touches nothing else on the page.
+
+Later cards remove claims, one way (running again changes nothing): 1382 (badges, second button), 1388 (the
+apprenticeship section becomes one sentence), 1393 (Indiana box, Department of Labor mentions, "industry-recognized
+credential"), 1409 (any other "registered apprenticeship" sentence; and the same cleaning, without price or Buy
+button, for every course page that has no row in the data file).
 """
 import html
 import json
@@ -45,12 +50,16 @@ APPRENTICESHIP_NOTE = ('<h2>Registered apprenticeships</h2>\n  <div class="card"
 APPRENTICESHIP_NOTE_TEXT = re.compile(re.escape(APPRENTICESHIP_NOTE))
 # card 1393 (A): three more things leave the course sales pages. The one sentence from card 1388 stays.
 # a wage-source citation ("Bureau of Labor Statistics, U.S. Department of Labor") is not a claim and stays
-CLAIM = re.compile(r"USDOL|\bDOL\b|(?<!Statistics, U\.S\. )Department of Labor|industry-recognized credential", re.I)
+# card 1409 (A) adds: any other sentence that says "registered apprenticeship" (the card 1388 sentence is the
+# only place the pages still say it)
+CLAIM = re.compile(r"USDOL|\bDOL\b|(?<!Statistics, U\.S\. )Department of Labor|industry-recognized credential"
+                   r"|registered apprentice", re.I)
 INDIANA = re.compile(r'[ \t]*<div class="indiana">(?:(?!<div).)*?</div>\n?', re.S)
 MILESTONE = re.compile(r"<div class='mil'><b>[^<]*</b><span>([^<]*)</span></div>")
 FAQ_ITEM = re.compile(r"<details><summary>([^<]*)</summary><p>([^<]*)</p></details>")
 FAQ_EMPTY = re.compile(r"<h2>Frequently asked questions</h2>(?!<details>)")
 PLAIN_P = re.compile(r"<p>([^<]*)</p>")
+PROMISE_P = re.compile(r'<p class="promise">([^<]*)</p>')
 META = re.compile(r'<meta name="(description|keywords)" content="([^"]*)">')
 LD = re.compile(r'(<script type="application/ld\+json">)(.*?)(</script>)', re.S)
 SENTENCE_END = re.compile(r"(?<=[.!?])(?<!Inc\.)(?<!U\.S\.)(?<!e\.g\.)(?<!i\.e\.)(?<!vs\.)\s+")
@@ -115,6 +124,17 @@ def remove_remaining_lines(page, row):
         text = without_claims(m.group(1))
         return f"<p>{text}</p>" if text else ""
     page = PLAIN_P.sub(paragraph, page)
+
+    def promise(m):
+        # the one line under the title: keep the promise, cut only its apprenticeship ending
+        # ("... with VR training and a path to a registered apprenticeship." -> "... with VR training.")
+        text, found = m.group(1), CLAIM.search(m.group(1))
+        if not found:
+            return m.group(0)
+        cut = text.rfind(" and ", 0, found.start())
+        text = (text[:cut].rstrip(" ,") + ".") if cut > 0 else (without_claims(text) or "Online course from Hope Training Academy.")
+        return f'<p class="promise">{text}</p>'
+    page = PROMISE_P.sub(promise, page)
 
     def meta(m):
         if not CLAIM.search(m.group(2)):
@@ -219,6 +239,22 @@ def render(page, row):
     return page.replace("</head>", head + "</head>", 1)
 
 
+H1 = re.compile(r"<h1>([^<]*)</h1>")
+
+
+def clean_other(page, slug):
+    """A course page with no row in the data file (no price, no Buy button): card 1409 (A) asks for the same
+    cleaning as the sales pages got under cards 1382, 1388 and 1393. Nothing is added except the one sentence."""
+    title = H1.search(page)
+    if not title:
+        raise ValueError(f"{slug}: no title; page layout differs, not changed")
+    page = page.replace(CHIP_APPRENTICESHIP, "")
+    if NO_CERTIFICATION.search(page):
+        page = page.replace(CHIP_CERTIFICATION, "")
+    page = APPRENTICESHIP_SECTION.sub(lambda m: APPRENTICESHIP_NOTE, page, count=1)
+    return remove_remaining_lines(page, {"slug": slug, "name": html.unescape(title.group(1))})
+
+
 def main(argv):
     check = "--check" in argv
     rows = json.loads((ROOT / "data" / "course-buy-data.json").read_text(encoding="utf-8"))
@@ -234,12 +270,22 @@ def main(argv):
             stale.append(row["slug"])
             if not check:
                 path.write_text(after, encoding="utf-8")
+    in_data = {r["slug"] for r in rows}
+    others = sorted(p.parent.name for p in (ROOT / "courses").glob("*/index.html") if p.parent.name not in in_data)
+    for slug in others:
+        path = ROOT / "courses" / slug / "index.html"
+        before = path.read_text(encoding="utf-8")
+        after = clean_other(before, slug)
+        if after != before:
+            stale.append(slug)
+            if not check:
+                path.write_text(after, encoding="utf-8")
     if check:
         for slug in stale:
             print(f"DIFFERS from data file: courses/{slug}/index.html")
-        print(f"{len(rows)} pages checked, {len(stale)} differ")
+        print(f"{len(rows)} pages checked, {len(stale)} differ ({len(others)} other course pages also checked)")
         return 1 if stale else 0
-    print(f"{len(rows)} pages in data file, {len(stale)} written")
+    print(f"{len(rows)} pages in data file, {len(others)} other course pages, {len(stale)} written")
     return 0
 
 
