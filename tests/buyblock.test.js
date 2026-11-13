@@ -24,6 +24,26 @@ test("the certification badge stays where the page does not deny a certification
     assert.ok(page(slug).includes("Industry certification</span>"), slug);
 });
 
+test("card 1393: the Indiana line, Department of Labor mentions and 'industry-recognized credential' are gone from every sales page", () => {
+  const note = "sponsors registered apprenticeships through the United States Department of Labor, as a separate program from this course";
+  for (const row of rows) {
+    const html = page(row.slug);
+    assert.ok(!html.includes('<div class="indiana">'), row.slug + ": Indiana line");
+    const rest = html.split(note).join("").split("Bureau of Labor Statistics, U.S. Department of Labor").join("");
+    assert.ok(!/USDOL|\bDOL\b|Department of Labor|industry-recognized credential/i.test(rest), row.slug + ": a claim is left");
+    // one page (medical terminology, self-guided) never had the apprenticeship section, so it has no sentence
+    assert.strictEqual(html.split(note).length - 1, html.split('data-apprenticeship-note="1"').length - 1, row.slug + ": the card 1388 sentence stays wherever it was");
+    const description = html.match(/<meta name="description" content="([^"]*)">/);
+    assert.ok(description && description[1].length >= 30, row.slug + ": the page keeps a description");
+    for (const m of html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)) JSON.parse(m[1]);
+    assert.ok(!/<details><summary>[^<]*<\/summary><p><\/p><\/details>/.test(html), row.slug + ": no question is left without an answer");
+  }
+});
+
+test("card 1393: a wage-source citation is not a claim and stays", () => {
+  assert.ok(page("the-keys-to-effective-editing").includes("Bureau of Labor Statistics, U.S. Department of Labor"));
+});
+
 for (const row of rows) {
   test(`${row.slug}: price and one-click checkout directly under the title`, () => {
     const html = page(row.slug);
