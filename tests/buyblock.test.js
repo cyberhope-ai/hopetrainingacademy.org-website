@@ -40,6 +40,30 @@ test("card 1393: the Indiana line, Department of Labor mentions and 'industry-re
   }
 });
 
+test("card 1409: the 576 course pages without a Buy button are cleaned the same way, and no page says 'registered apprenticeship' outside the one sentence", () => {
+  const note = "sponsors registered apprenticeships through the United States Department of Labor, as a separate program from this course";
+  const inData = new Set(rows.map((r) => r.slug));
+  const all = fs.readdirSync(path.join(ROOT, "courses")).filter((d) => fs.existsSync(path.join(ROOT, "courses", d, "index.html")));
+  const others = all.filter((d) => !inData.has(d));
+  assert.strictEqual(all.length, rows.length + others.length);
+  assert.ok(others.length >= 500, "the other course pages are found");
+  for (const slug of all) {
+    const html = page(slug);
+    const rest = html.split(note).join("").split("<h2>Registered apprenticeships</h2>").join("").split("Bureau of Labor Statistics, U.S. Department of Labor").join("");
+    assert.ok(!/USDOL|\bDOL\b|Department of Labor|industry-recognized credential|registered apprentice/i.test(rest), slug + ": a claim is left");
+    assert.ok(!html.includes('<div class="indiana">'), slug + ": Indiana line");
+    assert.ok(!html.includes("USDOL Registered Apprenticeship</span>"), slug + ": apprenticeship badge");
+    for (const m of html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)) JSON.parse(m[1]);
+    assert.ok(/<h1>[^<]+<\/h1><p class="promise">[^<]{20,}<\/p>/.test(html), slug + ": the title and its one line are still there");
+  }
+  for (const slug of others) {
+    const html = page(slug);
+    assert.ok(!html.includes("buy-block"), slug + ": a page with no data row gets no price or Buy button");
+    assert.strictEqual(html.split(note).length, 2, slug + ": the one sentence, once");
+    assert.ok(html.includes("Check if you qualify"), slug + ": its own action button is not touched");
+  }
+});
+
 test("card 1393: a wage-source citation is not a claim and stays", () => {
   assert.ok(page("the-keys-to-effective-editing").includes("Bureau of Labor Statistics, U.S. Department of Labor"));
 });
