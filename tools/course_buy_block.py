@@ -24,6 +24,19 @@ STORE = "https://store.hopetrainingacademy.org"
 BLOCK = re.compile(r"[ \t]*<!-- buy-block:start -->.*?<!-- buy-block:end -->\n?", re.S)
 HEAD_BLOCK = re.compile(r"<!-- buy-block-head:start -->.*?<!-- buy-block-head:end -->\n?", re.S)
 BOUGHT = re.compile(r'<a ([^>]*?)data-buy="1" ([^>]*?)href="' + re.escape(STORE) + r'/cart/\d+:1"')
+# CEO card 1382 (2026-11-13), answer A: on pages that sell a course, remove the "Industry certification" badge
+# where the page itself says the course has no certification, remove the "USDOL Registered Apprenticeship"
+# badge from individual course pages, and remove "Check if you qualify" so Enroll is the only action.
+CHIP_APPRENTICESHIP = "<span class='chip'>🏛 USDOL Registered Apprenticeship</span>"
+CHIP_CERTIFICATION = "<span class='chip'>🎓 Industry certification</span>"
+QUALIFY = '<a class="cta ghost" href="https://hopetrainingacademy.org/#register">Check if you qualify</a>'
+# The page "says there is none" when a sentence denies a certification: "does not lead to a specific industry
+# certification", "no associated certification exam", "rather than preparing for a certification exam".
+# Sentences about what a learner needs beforehand ("no prior certification required") do not count.
+NO_CERTIFICATION = re.compile(
+    r"(?:does not|doesn't|do not|is not|isn't|\bno\b|rather than)(?![^.<]{0,70}\b(?:prior|prerequisite|required?|needed)\b)"
+    r"[^.<]{0,70}\bcertification", re.I)
+OLD_OFFER = re.compile(r'("offers": \{"@type": "Offer", "price": ")[0-9.]+(")')
 PROMISE = re.compile(r'(<h1>[^<]*</h1><p class="promise">.*?</p>\n)', re.S)
 
 
@@ -55,6 +68,12 @@ def render(page, row):
     if not PROMISE.search(page):
         raise ValueError(f"{slug}: title block not found; page layout differs, not changed")
     name, price = html.escape(row["name"]), money(row["price"])
+    # card 1382: claims and the second action (one-way removals; running again changes nothing)
+    page = page.replace(CHIP_APPRENTICESHIP, "").replace(QUALIFY, "")
+    if NO_CERTIFICATION.search(page):
+        page = page.replace(CHIP_CERTIFICATION, "")
+    # the page's older course data carries its own copy of the price: keep it equal to the data file
+    page = OLD_OFFER.sub(lambda m: m.group(1) + row["price"] + m.group(2), page)
     if row["available"]:
         # 2. every link to this course's store page becomes the one-click checkout link
         page = page.replace(f'href="{product}">See the course →</a>', f'href="{product}">Enroll now →</a>')

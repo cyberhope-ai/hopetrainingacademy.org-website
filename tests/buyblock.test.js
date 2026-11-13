@@ -44,6 +44,11 @@ for (const row of rows) {
     assert.strictEqual(product["@type"], "Product");
     assert.strictEqual(product.offers.price, row.price);
     assert.strictEqual(product.offers.url, `https://hopetrainingacademy.org/courses/${row.slug}/`);
+    // card 1382: no apprenticeship badge, no second action, and no certification badge on a page that says there is none
+    assert.ok(!html.includes("USDOL Registered Apprenticeship</span>"), "no apprenticeship badge on a course sales page");
+    assert.ok(!html.includes("Check if you qualify"), "Enroll is the only action");
+    if (/(?:does not|doesn't|do not|is not|isn't|\bno\b|rather than)(?![^.<]{0,70}\b(?:prior|prerequisite|required?|needed)\b)[^.<]{0,70}\bcertification/i.test(html))
+      assert.ok(!html.includes("Industry certification</span>"), "no certification badge where the page says there is none");
     assert.ok(!/\bschool\b/i.test(html.slice(html.indexOf("<!-- buy-block:start -->"), html.indexOf("<!-- buy-block:end -->"))));
   });
 }
