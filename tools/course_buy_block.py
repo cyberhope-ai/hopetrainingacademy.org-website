@@ -7,7 +7,8 @@ pages: price and Buy button at the top, one click to the same checkout".
   python3 tools/course_buy_block.py            apply data/course-buy-data.json to courses/<slug>/index.html
   python3 tools/course_buy_block.py --check    change nothing; list pages that differ from the data file (exit 1)
 
-One row per course in the data file: slug (= store product handle), name, variant_id, price, sku, available.
+One row per course in the data file: slug (the page: courses/<slug>/), name, variant_id, price, sku, available,
+and handle only where the store product's handle differs from the page slug (the page already links to it).
 The rows come from a Shopify product export, never from scraping the store. Running it twice changes nothing.
 Everything this script writes sits between buy-block markers or is a link carrying data-buy, so it can always
 find and replace its own work and touches nothing else on the page.
@@ -196,12 +197,15 @@ def validate(row):
         raise ValueError(f"{row['slug']}: variant_id must be a positive integer")
     if type(row["available"]) is not bool or not row["name"].strip() or not row["sku"].strip():
         raise ValueError(f"{row['slug']}: name, sku and available are required")
+    if "handle" in row and not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", row["handle"]):   # store handles may carry "_"
+        raise ValueError(f"{row['slug']}: bad store handle {row['handle']!r}")
     money(row["price"])
 
 
 def render(page, row):
-    slug, product = row["slug"], f"{STORE}/products/{row['slug']}"
+    slug, product = row["slug"], f"{STORE}/products/{row.get('handle', row['slug'])}"
     cart = f"{STORE}/cart/{row['variant_id']}:1"
+    first_time = "<!-- buy-block:start -->" not in page
     # 1. undo our own earlier work, so the result depends only on the original page and the data row
     page = BLOCK.sub("", page)
     page = HEAD_BLOCK.sub("", page)
@@ -209,6 +213,11 @@ def render(page, row):
     page = page.replace(f'href="{product}">Enroll now →</a><a class="cta ghost"', f'href="{product}">See the course →</a><a class="cta ghost"')
     if not PROMISE.search(page):
         raise ValueError(f"{slug}: title block not found; page layout differs, not changed")
+    if first_time and row["available"] and f'href="{product}"' not in page:
+        # The first time a page gets a Buy button it must already link to this row's store product; that link is
+        # the evidence that row and page belong together. (After that the link has become the checkout link, so
+        # this cannot be re-checked from the page; tests/buyblock.test.js pins the variant per page instead.)
+        raise ValueError(f"{slug}: the page has no link to {product}; row and page do not belong together")
     name, price = html.escape(row["name"]), money(row["price"])
     # card 1382: claims and the second action (one-way removals; running again changes nothing)
     page = page.replace(CHIP_APPRENTICESHIP, "").replace(QUALIFY, "")
@@ -216,8 +225,15 @@ def render(page, row):
         page = page.replace(CHIP_CERTIFICATION, "")
     # card 1388: one true sentence in place of the apprenticeship section (the note itself no longer matches the pattern)
     page = APPRENTICESHIP_SECTION.sub(lambda m: APPRENTICESHIP_NOTE, page, count=1)
-    # card 1393: the Indiana line, the Department of Labor mentions and "industry-recognized credential"
-    page = remove_remaining_lines(page, row)
+    # card 1393: the Indiana line, the Department of Labor mentions and "industry-recognized credential";
+    # on the seven approved outside-certification pages the true credential sentence stays (card answer A),
+    # whether or not the page sells the course
+    global CLAIM
+    CLAIM = CLAIM_KEEPING_CREDENTIAL if (slug in CREDENTIAL_PAGES and not NO_CERTIFICATION.search(page)) else CLAIM_ALL
+    try:
+        page = remove_remaining_lines(page, row)
+    finally:
+        CLAIM = CLAIM_ALL
     # the page's older course data carries its own copy of the price: keep it equal to the data file
     page = OLD_OFFER.sub(lambda m: m.group(1) + row["price"] + m.group(2), page)
     if row["available"]:

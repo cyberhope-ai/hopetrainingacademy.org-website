@@ -30,7 +30,9 @@ test("card 1393: the Indiana line, Department of Labor mentions and 'industry-re
     const html = page(row.slug);
     assert.ok(!html.includes('<div class="indiana">'), row.slug + ": Indiana line");
     const rest = html.split(note).join("").split("Bureau of Labor Statistics, U.S. Department of Labor").join("");
-    assert.ok(!/USDOL|\bDOL\b|Department of Labor|industry-recognized credential/i.test(rest), row.slug + ": a claim is left");
+    // the seven approved outside-certification pages keep the true credential sentence (certification sentences card, A)
+    const claim = CREDENTIAL_PAGES.has(row.slug) ? /USDOL|\bDOL\b|Department of Labor/i : /USDOL|\bDOL\b|Department of Labor|industry-recognized credential/i;
+    assert.ok(!claim.test(rest), row.slug + ": a claim is left");
     // one page (medical terminology, self-guided) never had the apprenticeship section, so it has no sentence
     assert.strictEqual(html.split(note).length - 1, html.split('data-apprenticeship-note="1"').length - 1, row.slug + ": the card 1388 sentence stays wherever it was");
     const description = html.match(/<meta name="description" content="([^"]*)">/);
@@ -57,7 +59,8 @@ test("certification sentences card (A): the true sentence is back on the seven a
   const inData = new Set(rows.map((r) => r.slug));
   for (const [slug, sentence] of CREDENTIAL_PAGES) {
     const html = page(slug);
-    assert.ok(!inData.has(slug), slug + ": is one of the pages without a Buy button, as the card said");
+    // Since 2026-11-14 most of these pages also sell the course; the sentence must survive the Buy block being added.
+    if (inData.has(slug)) assert.ok(html.includes('class="buybox"'), slug + ": sells the course and keeps the sentence");
     assert.ok(html.includes(sentence), slug + ": the restored sentence is on the page");
     assert.ok(!denies.test(html), slug + ": the page itself does not deny a certification");
     assert.ok(!/earn while you learn|on-the-job|de-risk/i.test(html), slug + ": no apprenticeship wording came back");
@@ -66,13 +69,14 @@ test("certification sentences card (A): the true sentence is back on the seven a
   assert.deepStrictEqual(withPhrase.sort(), [...CREDENTIAL_PAGES.keys()].sort());
 });
 
-test("card 1409: the 576 course pages without a Buy button are cleaned the same way, and no page says 'registered apprenticeship' outside the one sentence", () => {
+test("card 1409: course pages without a Buy button are cleaned the same way, and no page says 'registered apprenticeship' outside the one sentence", () => {
   const note = "sponsors registered apprenticeships through the United States Department of Labor, as a separate program from this course";
   const inData = new Set(rows.map((r) => r.slug));
   const all = fs.readdirSync(path.join(ROOT, "courses")).filter((d) => fs.existsSync(path.join(ROOT, "courses", d, "index.html")));
   const others = all.filter((d) => !inData.has(d));
   assert.strictEqual(all.length, rows.length + others.length);
-  assert.ok(others.length >= 500, "the other course pages are found");
+  // 2026-11-14: 553 of the former 576 have an active store product and now carry the Buy block; 23 have no store product.
+  assert.strictEqual(others.length, 23, "the course pages with no store product are found");
   for (const slug of all) {
     const html = page(slug);
     const rest = html.split(note).join("").split("<h2>Registered apprenticeships</h2>").join("").split("Bureau of Labor Statistics, U.S. Department of Labor").join("");
@@ -137,3 +141,24 @@ for (const row of rows) {
     assert.ok(!/\bschool\b/i.test(ours), "the buy block does not call the Academy a school");
   });
 }
+
+test("a row whose store handle differs from the page slug only applies to a page that already links to that product", () => {
+  const withHandle = rows.filter((r) => r.handle);
+  assert.ok(withHandle.length >= 200, "rows with a separate store handle exist");
+  for (const r of withHandle) {
+    assert.match(r.handle, /^[a-z0-9][a-z0-9_-]*$/);
+    assert.notStrictEqual(r.handle, r.slug);
+    const html = page(r.slug);
+    assert.ok(html.includes(`href="https://store.hopetrainingacademy.org/cart/${r.variant_id}:1"`), r.slug + ": one-click checkout link for this row's variant");
+    assert.ok(!html.includes(`href="https://store.hopetrainingacademy.org/products/${r.slug}"`), r.slug + ": no link to a store address that does not exist");
+  }
+});
+
+test("every page that sells a course shows exactly its data row's price, once in the Buy block", () => {
+  for (const r of rows) {
+    const html = page(r.slug);
+    assert.strictEqual(html.split('class="buybox"').length, 2, r.slug + ": one Buy block");
+    assert.ok(html.includes("Enroll now · " + label(r.price)), r.slug + ": Enroll button carries the row's price");
+    assert.ok(!html.includes("Check if you qualify"), r.slug + ": Enroll is the only action");
+  }
+});
