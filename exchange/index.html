@@ -349,6 +349,19 @@ header.nav .wrap{max-width:1140px}
 .may-card p{margin-top:12px;font-size:.95rem;color:var(--ink-2,#c9d6e6);}
 .host-chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
 .host-chips span{font-family:var(--mono);font-size:.74rem;letter-spacing:.03em;border:1px solid var(--line-2);border-radius:999px;padding:8px 14px;color:var(--cyan);}
+.photo-strip{border-radius:18px;overflow:hidden;border:1px solid var(--line-2);position:relative;}
+.photo-strip img{width:100%;height:clamp(230px,40vw,460px);object-fit:cover;display:block;}
+.photo-strip .cap{position:absolute;left:0;right:0;bottom:0;padding:18px 22px;background:linear-gradient(to top,rgba(5,8,15,.88),rgba(5,8,15,.1) 70%,transparent);font-family:var(--mono);font-size:.76rem;letter-spacing:.04em;color:#e8f1fb;}
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.gal figure{margin:0;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--bg2);position:relative;}
+.gal figure img{width:100%;height:220px;object-fit:cover;display:block;transition:transform .55s ease;}
+.gal figure:hover img{transform:scale(1.06);}
+.gal figcaption{position:absolute;left:0;right:0;bottom:0;padding:11px 13px;background:linear-gradient(to top,rgba(5,8,15,.85),transparent);font-family:var(--mono);font-size:.68rem;letter-spacing:.03em;color:#e8f1fb;}
+.gal .wide{grid-column:span 2;}
+@media(max-width:860px){.gal{grid-template-columns:1fr 1fr;}.gal .wide{grid-column:span 2;}}
+@media(max-width:560px){.gal{grid-template-columns:1fr;}.gal .wide{grid-column:span 1;}}
+.dir-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.dir-head .ar{font-family:var(--display);font-weight:800;color:var(--gold,#f7ac3d);font-size:1.3rem;}
 </style>
 
 <!-- HERO -->
@@ -368,6 +381,14 @@ header.nav .wrap{max-width:1140px}
 <p>The first cohort lands for the Month of May and the 111th Indianapolis 500 — the one month the whole world comes to Indy.</p>
 </div></div>
 </div></div></section>
+
+<!-- HERO PHOTO STRIP -->
+<section class="band" style="padding-top:14px;padding-bottom:0;"><div class="wrap">
+<div class="photo-strip reveal">
+<img alt="The Lauterbrunnen valley, with the Staubbach waterfall and the cliffs of the Bernese Oberland" src="/assets/exchange/swiss-lauterbrunnen.jpg" width="1500" height="1073" loading="lazy" decoding="async"/>
+<div class="cap">Switzerland — where your paid U.S. apprenticeship goes abroad for the Month of May</div>
+</div>
+</div></section>
 
 <!-- STATS -->
 <section class="band" style="padding-top:0;"><div class="wrap"><div class="stat-row reveal">
@@ -426,6 +447,23 @@ header.nav .wrap{max-width:1140px}
 </div>
 </div></section>
 
+<!-- SWISS GALLERY : INDIANA -> SWITZERLAND -->
+<section class="band"><div class="wrap">
+<div class="dir-head"><span class="eyebrow">Indiana <span class="ar">→</span> Switzerland</span></div>
+<h2 style="margin:10px 0 8px;font-size:clamp(1.6rem,4vw,2.3rem);">What your month in Switzerland looks like</h2>
+<p class="muted" style="margin:0 0 22px;max-width:70ch;">Hoosier apprentices spend about four weeks working inside a Swiss technology company — with time to see the country that invented the apprenticeship model: the Alps, the lakes, and cities like Zürich, Lucerne and Bern.</p>
+<div class="gal reveal">
+<figure><img alt="The Matterhorn above Zermatt, Switzerland" src="/assets/exchange/swiss-matterhorn.jpg" width="1500" height="844" loading="lazy" decoding="async"/><figcaption>The Matterhorn · Zermatt</figcaption></figure>
+<figure class="wide"><img alt="Zürich old town on the Limmat river, Switzerland" src="/assets/exchange/swiss-zurich.jpg" width="1277" height="662" loading="lazy" decoding="async"/><figcaption>Zürich on the Limmat · developed with TIE International (Zürich)</figcaption></figure>
+<figure><img alt="The Chapel Bridge (Kapellbrücke) in Lucerne, Switzerland" src="/assets/exchange/swiss-lucerne-chapel.jpg" width="1500" height="1000" loading="lazy" decoding="async"/><figcaption>Chapel Bridge · Lucerne</figcaption></figure>
+<figure><img alt="The Lauterbrunnen valley and Staubbach waterfall in the Bernese Alps" src="/assets/exchange/swiss-lauterbrunnen.jpg" width="1500" height="1073" loading="lazy" decoding="async"/><figcaption>Lauterbrunnen valley · Bernese Oberland</figcaption></figure>
+<figure class="wide"><img alt="A panoramic red Swiss alpine train beside a turquoise mountain lake" src="/assets/exchange/swiss-bernina-express.jpg" width="1600" height="988" loading="lazy" decoding="async"/><figcaption>Panoramic alpine rail · UNESCO World Heritage line</figcaption></figure>
+<figure><img alt="Lake Lucerne and snow-capped Alps seen from above" src="/assets/exchange/swiss-lake-lucerne.jpg" width="1279" height="652" loading="lazy" decoding="async"/><figcaption>Lake Lucerne &amp; the Alps</figcaption></figure>
+<figure><img alt="The old town of Bern on the Aare river" src="/assets/exchange/swiss-bern.jpg" width="1321" height="914" loading="lazy" decoding="async"/><figcaption>Old town of Bern · on the Aare</figcaption></figure>
+<figure class="wide"><img alt="A sailboat on a Swiss alpine lake with snow-capped mountains" src="/assets/exchange/swiss-lake-sail.jpg" width="1037" height="777" loading="lazy" decoding="async"/><figcaption>Spring on a Swiss lake</figcaption></figure>
+</div>
+</div></section>
+
 <!-- STAGE FLOW -->
 <section class="band"><div class="wrap">
 <span class="eyebrow">How it works</span>
@@ -456,6 +494,20 @@ header.nav .wrap{max-width:1140px}
 </div>
 </div></div></section>
 
+<!-- INDY GALLERY : SWITZERLAND -> INDIANA -->
+<section class="band"><div class="wrap">
+<div class="dir-head"><span class="eyebrow">Switzerland <span class="ar">→</span> Indiana</span></div>
+<h2 style="margin:10px 0 8px;font-size:clamp(1.6rem,4vw,2.3rem);">What Swiss apprentices discover in Indianapolis</h2>
+<p class="muted" style="margin:0 0 22px;max-width:70ch;">Swiss <i>Lernende</i> spend about four weeks on real projects inside an Indiana technology company — arriving for the Month of May, the Indianapolis 500, and a walkable downtown of canals, stadiums and tech.</p>
+<div class="gal reveal">
+<figure class="wide"><img alt="The grandstands and track at the Indianapolis Motor Speedway on Indianapolis 500 race day" src="/assets/exchange/indy-ims-track.jpg" width="1500" height="789" loading="lazy" decoding="async"/><figcaption>Race day at the Indianapolis Motor Speedway · the Indianapolis 500®</figcaption></figure>
+<figure><img alt="Monument Circle in downtown Indianapolis at dusk" src="/assets/exchange/indy-monument-circle.jpg" width="1500" height="1001" loading="lazy" decoding="async"/><figcaption>Monument Circle · downtown Indy</figcaption></figure>
+<figure><img alt="The Indianapolis Canal Walk and downtown skyline" src="/assets/exchange/indy-canal-skyline.jpg" width="970" height="647" loading="lazy" decoding="async"/><figcaption>Canal Walk &amp; the skyline</figcaption></figure>
+<figure><img alt="White River State Park with the downtown Indianapolis skyline" src="/assets/exchange/indy-white-river.jpg" width="1500" height="1125" loading="lazy" decoding="async"/><figcaption>White River State Park · downtown Indianapolis</figcaption></figure>
+<figure><img alt="Lucas Oil Stadium in downtown Indianapolis" src="/assets/exchange/indy-lucas-oil.jpg" width="1500" height="754" loading="lazy" decoding="async"/><figcaption>Lucas Oil Stadium · home of the Colts</figcaption></figure>
+</div>
+</div></section>
+
 <!-- FAQ -->
 <section class="band"><div class="wrap" style="max-width:820px;">
 <span class="eyebrow">Common questions</span>
@@ -478,7 +530,7 @@ header.nav .wrap{max-width:1140px}
 
 <!-- DISCLAIMER -->
 <section class="band" style="padding-top:0;"><div class="wrap">
-<p style="font-size:.72rem;line-height:1.6;opacity:.7;max-width:90ch;">Hope Training Academy · Downtown Indianapolis · a nonprofit tech-workforce academy (DBA of Video Game Palooza, Inc., 501(c)(3)) · 2,000+ Hoosiers trained since 2018 · DOL-registered since 2018 · Developed with TIE International (Zürich) · Verified skills by CyberHope AI SkillDNA. Free training for those who qualify. Exchange dates, costs and host companies are to be confirmed before applications open; this program is developed with TIE International and is not a program of the Swiss government. Indianapolis 500® is a registered trademark of its owner; HTA is not affiliated with IMS.</p>
+<p style="font-size:.72rem;line-height:1.6;opacity:.7;max-width:90ch;">Hope Training Academy · Downtown Indianapolis · a nonprofit tech-workforce academy (DBA of Video Game Palooza, Inc., 501(c)(3)) · 2,000+ Hoosiers trained since 2018 · DOL-registered since 2018 · Developed with TIE International (Zürich) · Verified skills by CyberHope AI SkillDNA. Free training for those who qualify. Exchange dates, costs and host companies are to be confirmed before applications open; this program is developed with TIE International and is not a program of the Swiss government. Indianapolis 500® is a registered trademark of its owner; HTA is not affiliated with IMS.<br/><span class="imgcred" style="opacity:.85;">Photography, via Wikimedia Commons (resized): Matterhorn: <a href="https://commons.wikimedia.org/wiki/File:CH.VS.Zermatt_Sunnegga_Grindjisee_Matterhorn_9034_16x9-R_16K.jpg" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">Roy Egloff</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">CC BY-SA 4.0</a>; Zürich on the Limmat: <a href="https://commons.wikimedia.org/wiki/File:Z%C3%BCrich_view_Quaibr%C3%BCcke_20200702.jpg" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">Daniel Kraft</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">CC BY-SA 3.0</a>; Chapel Bridge, Lucerne: <a href="https://commons.wikimedia.org/wiki/File:Luzern_Kapellbruecke.jpg" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">Ikiwaner</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">CC BY-SA 3.0</a>; Lauterbrunnen: <a href="https://commons.wikimedia.org/wiki/File:Lauterbrunnen_Valley%2C_street_view_with_Staubbach_Waterfall%2C_Bernese_Oberland%2C_Switzerland-LCCN2001701328.jpg" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">Photochrom Print Collection</a>, public domain; Bern on the Aare: <a href="https://commons.wikimedia.org/wiki/File:Kraftwerk_Matte%2C_Aare%2C_Bern_%28cropped%29.jpg" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">Sebastian Wälti</a>, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">CC BY 4.0</a>; Panoramic alpine rail: <a href="https://commons.wikimedia.org/wiki/File:RhB_ABe_4-4_III_mit_Bernina-Express_am_Lago_Bianco.jpg" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">Kabelleger / David Gubler</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">CC BY-SA 3.0</a>; Lake Lucerne: <a href="https://commons.wikimedia.org/wiki/File:Vierwaldst%C3%A4ttersee_with_Mountain_Panorama.jpg" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">PhilippTillmann99</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">CC BY-SA 4.0</a>; Alpine lake with sailboat: <a href="https://commons.wikimedia.org/wiki/File:Luzern-boat-lake-mountains.jpg" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">gcmmoura</a>, public domain; Monument Circle: <a href="https://commons.wikimedia.org/wiki/File:Soldiers_and_Sailors_Monument_at_Monument_Circle.jpg" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">vxla</a>, <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">CC BY 2.0</a>; Canal Walk: <a href="https://commons.wikimedia.org/wiki/File:Indianapolis%2C_Sept_2013_14.jpg" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">CyberXRef</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">CC BY-SA 3.0</a>; White River State Park: <a href="https://commons.wikimedia.org/wiki/File:White_River_State_Park_Indianapolis_Skyline_2020.jpg" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">Momoneymoproblemz</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">CC BY-SA 4.0</a>; Lucas Oil Stadium: <a href="https://commons.wikimedia.org/wiki/File:Lucas_Oil_Stadium_panoramic_view_from_south_end_suite_-_WCNA_Oct._2024.jpg" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">SounderBruce</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">CC BY-SA 4.0</a>; Indianapolis Motor Speedway on race day: <a href="https://commons.wikimedia.org/wiki/File:2007_500_Rain.jpg" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">The359</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">CC BY-SA 3.0</a>.</span></p>
 </div></section>
 </main>
 <footer id="contact">
